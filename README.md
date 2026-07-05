@@ -1,6 +1,9 @@
 # CyberMentor Agent 🛡️
+**Developed by:** Alanoud Khalid Al-Oraydi
 
 **Track:** Concierge Agents · Kaggle "AI Agents: Intensive Vibe Coding Capstone"
+
+**🚀 Live Demo:** https://YOUR-APP-URL-HERE.streamlit.app
 
 A personalized AI cybersecurity mentor with a professional AppSec-dashboard
 UI. On first run it gets to know you (name, age, field of study), then
