@@ -1,0 +1,52 @@
+[
+  {
+    "id": "BB-SA-001",
+    "title": "stc pay - Payment API Security Review",
+    "platform": "BugBounty.sa",
+    "organization": "stc pay (mock listing)",
+    "difficulty": "intermediate",
+    "reward": "500 - 3000 SAR",
+    "required_skills": ["api security", "burp suite", "authentication", "idor", "recon"],
+    "description": "Test payment authorization and account-linking APIs for broken access control and business-logic flaws."
+  },
+  {
+    "id": "BB-SA-002",
+    "title": "SDAIA Open Data Portal - Web Application Assessment",
+    "platform": "BugBounty.sa",
+    "organization": "SDAIA (mock listing)",
+    "difficulty": "beginner",
+    "reward": "300 - 1500 SAR",
+    "required_skills": ["web recon", "xss", "sql injection", "owasp top 10"],
+    "description": "Public-facing open-data portal accepting responsible disclosure of standard OWASP Top 10 web vulnerabilities."
+  },
+  {
+    "id": "CTF-SA-003",
+    "title": "KFUPM Cyber Security Club - Monthly Jeopardy CTF (Web Track)",
+    "platform": "Local Cyber Security Club",
+    "organization": "KFUPM CSC (mock listing)",
+    "difficulty": "beginner",
+    "reward": "Points + certificate",
+    "required_skills": ["web recon", "sql injection", "burp suite", "osint"],
+    "description": "Student-run jeopardy-style CTF focused on classic web exploitation challenges. Great first target for new hunters."
+  },
+  {
+    "id": "BB-SA-004",
+    "title": "National Cyber Initiative - Critical Infrastructure Adjacent Systems",
+    "platform": "BugBounty.sa",
+    "organization": "NCA-affiliated entity (mock listing)",
+    "difficulty": "advanced",
+    "reward": "2000 - 10000 SAR",
+    "required_skills": ["network security", "privilege escalation", "active directory", "recon", "exploitation"],
+    "description": "Advanced-track program covering infrastructure-adjacent systems. Recommended only after building a verified bounty track record."
+  },
+  {
+    "id": "SIM-SA-005",
+    "title": "ShiftZero CyberSimulation - Red Team Range",
+    "platform": "ShiftZero (mock listing)",
+    "organization": "ShiftZero Simulation Labs (mock listing)",
+    "difficulty": "intermediate",
+    "reward": "Points + leaderboard ranking",
+    "required_skills": ["network security", "active directory", "phishing awareness", "recon", "privilege escalation"],
+    "description": "A simulated corporate network range for practicing full attack-chain red-team exercises, from initial recon through lateral movement, in a safe, legal, gamified environment."
+  }
+]
