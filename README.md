@@ -3,7 +3,7 @@
 
 **Track:** Concierge Agents · Kaggle "AI Agents: Intensive Vibe Coding Capstone"
 
-**🚀 Live Demo:** https://cybermentor-kjnl5mykaaxnfidr6wegsh.streamlit.app/
+🚀 **Video Presentation & Demo:** [Click here to watch the demo on YouTube](https://youtu.be/PyH1RrECYZs)
 
 A personalized AI cybersecurity mentor with a professional AppSec-dashboard
 UI. On first run it gets to know you (name, age, field of study), then
