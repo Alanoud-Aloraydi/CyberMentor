@@ -488,6 +488,9 @@ MAIN CONVERSATION FLOW:
    status (e.g. "mark the SDAIA portal as done"), call
    `update_tracker_status` with the exact objective title and the new
    status ("planned", "in_progress", or "completed").
+8. If the user clearly asks to remove or delete a tracked objective
+   (e.g. "remove the stc pay bounty from my tracker"), call
+   `remove_from_tracker` with the exact objective title.
 
 RECON METHODOLOGY REQUESTS: if asked for a recon/attack methodology for a
 specific tracked objective, give a concise, structured, defensive/
@@ -943,7 +946,8 @@ with st.sidebar:
                 else:
                     st.error(result.get("message", "Failed to update status."))
 
-            if st.button("🛡️ Help Me Solve", key=f"solve_{key_suffix}"):
+            solve_col, remove_col = st.columns(2)
+            if solve_col.button("🛡️ Help Me Solve", key=f"solve_{key_suffix}"):
                 prompt = (
                     f"Give me a concise offensive-security recon methodology for "
                     f"approaching the objective '{target}', suitable for someone "
@@ -956,6 +960,13 @@ with st.sidebar:
                     reply = ask_mentor(prompt)
                 st.session_state.messages.append({"role": "assistant", "content": reply})
                 st.rerun()
+
+            if remove_col.button("🗑️ Remove", key=f"remove_{key_suffix}"):
+                result = call_mcp_tool_sync("remove_from_tracker", {"target": target})
+                if result.get("status") == "success":
+                    st.rerun()
+                else:
+                    st.error(result.get("message", "Could not remove this objective right now."))
 
             added = item.get("added_at", "")
             st.caption(f"Added: {added[:10] if added else 'n/a'}")

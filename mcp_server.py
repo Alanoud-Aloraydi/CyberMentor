@@ -451,5 +451,45 @@ def update_tracker_status(target: str, new_status: str) -> dict:
         return {"status": "error", "message": f"unexpected server error: {exc}"}
 
 
+@mcp.tool()
+def remove_from_tracker(target: str) -> dict:
+    """
+    Remove an objective from the user's local tracker, after the same
+    strict 4-layer sanitization used by the other write tools. Completes
+    the tracker CRUD (add / update-status / remove).
+
+    Args:
+        target: The exact title of an objective already in the tracker.
+
+    Returns:
+        A dict with `status` in {"success", "not_found", "security_alert",
+        "error"} and a human-readable `message`. Never raises.
+    """
+    try:
+        clean_target, error = _sanitize(target, MAX_TARGET_LENGTH, "target")
+        if error:
+            status = "security_alert" if error == SECURITY_ALERT_MSG else "error"
+            return {"status": status, "message": error}
+
+        with _TrackerLock():
+            todo = _load_todo()
+            remaining = [item for item in todo if item.get("target") != clean_target]
+
+            if len(remaining) == len(todo):
+                return {"status": "not_found", "message": f"'{clean_target}' is not in your tracker"}
+
+            if not _save_todo(remaining):
+                return {"status": "error", "message": "could not save the tracker right now, please try again"}
+
+        return {
+            "status": "success",
+            "message": f"Removed '{clean_target}' from your tracker",
+            "tracker_size": len(remaining),
+        }
+
+    except Exception as exc:  # Layer 4 guard: never crash the server.
+        return {"status": "error", "message": f"unexpected server error: {exc}"}
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")

@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Test / runtime artifacts
+.pytest_cache/
+.todo.lock
+profile.json

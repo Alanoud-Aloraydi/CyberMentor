@@ -116,9 +116,11 @@ connection alive, no matter how many times Streamlit reruns the script.
 ```
 cybermentor-agent/
 ├── agent.py             # Streamlit app: onboarding, theme, dashboard, tabs, scanner, self-protection
-├── mcp_server.py        # MCP server: search_bounties, add_to_tracker, update_tracker_status
+├── mcp_server.py        # MCP server: search_bounties, add_to_tracker, update_tracker_status, remove_from_tracker
 ├── bounties.json        # Mock bounty/CTF database (5 objectives)
 ├── todo.json            # Tracker data (starts empty)
+├── tests/               # pytest suite for the MCP server (security, CRUD, concurrency)
+├── .github/workflows/   # GitHub Actions CI (runs the tests on every push)
 ├── requirements.txt
 ├── .env.example
 └── .gitignore
@@ -157,6 +159,30 @@ automatically (default: `http://localhost:8501`). You do **not** need to
 launch `mcp_server.py` yourself — `agent.py` starts it automatically as a
 local subprocess over stdio the first time a tool is called.
 
+## 5b. Tests & Continuous Integration
+
+The security-critical MCP server has an automated `pytest` suite
+(`tests/test_mcp_server.py`, 31 tests) that turns the security and
+concurrency claims below from "verified during development" into an
+always-runnable proof:
+
+- **Input sanitization** — the allow-list rejects shell metacharacters,
+  path separators, and quotes; the blocklist catches `rm -rf`,
+  `DROP TABLE`, `UNION SELECT`, `sudo`, etc.; Arabic text is accepted.
+- **Tracker CRUD** — `search_bounties`, `add_to_tracker` (incl. duplicate
+  handling), `update_tracker_status` (incl. the closed status enum), and
+  `remove_from_tracker` (incl. not-found).
+- **Concurrency** — 30 `add_to_tracker` calls across 3 threads all persist,
+  demonstrating the tracker lock prevents the lost-update race.
+
+Run them locally:
+```bash
+pip install pytest
+pytest -q
+```
+**GitHub Actions** (`.github/workflows/ci.yml`) runs the suite on Python
+3.10–3.12 on every push and pull request.
+
 ## 6. How the Mandatory Kaggle Criteria Are Implemented
 
 ### ✅ Agent System (ADK)
@@ -185,8 +211,9 @@ local subprocess over stdio the first time a tool is called.
 - **🛡️ Cyber Ops Dashboard** sidebar: **📊 Progress Metrics** (three live
   `st.metric` counters), **🎯 Active Objectives** (status dropdowns wired
   straight to the `update_tracker_status` MCP tool — completing one
-  triggers `st.balloons()`), a **🛡️ Help Me Solve** button per objective,
-  and a **🎓 Request Specialized Consultation** button that uses the
+  triggers `st.balloons()`), a **🛡️ Help Me Solve** and a **🗑️ Remove**
+  button per objective (Remove is wired to the `remove_from_tracker` MCP
+  tool), and a **🎓 Request Specialized Consultation** button that uses the
   profile to suggest career paths and certifications.
 - **No internal file names anywhere in the UI.** Every caption, label, and
   message describes outcomes in plain language ("No objectives tracked
@@ -198,11 +225,12 @@ local subprocess over stdio the first time a tool is called.
 ### ✅ MCP Server
 - `mcp_server.py` is a standalone **Model Context Protocol** server built
   with the official `mcp` Python SDK (`FastMCP`), run over **stdio**,
-  exposing `search_bounties`, `add_to_tracker`, and
-  `update_tracker_status`. `agent.py` connects to it via ADK's
-  `McpToolset`, and the Streamlit UI also calls tools directly through the
-  same toolset for deterministic actions (status changes), bypassing the
-  LLM entirely for speed and reliability.
+  exposing `search_bounties`, `add_to_tracker`, `update_tracker_status`,
+  and `remove_from_tracker` (the last three form the full tracker CRUD).
+  `agent.py` connects to it via ADK's `McpToolset`, and the Streamlit UI
+  also calls tools directly through the same toolset for deterministic
+  actions (status changes, removing an objective), bypassing the LLM
+  entirely for speed and reliability.
 
 ### ✅ Sustainable Agentic Search (Google Grounding)
 - If `search_bounties` returns zero local matches, the system prompt
